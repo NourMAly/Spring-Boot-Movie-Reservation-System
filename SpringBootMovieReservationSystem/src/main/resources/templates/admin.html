@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #191919;
+            color: white;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 50px 0 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #cccccc;
+            margin-bottom: 40px;
+        }
+
+        .admin-container {
+            width: 90%;
+            max-width: 1000px;
+            margin: auto;
+
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .admin-card {
+            background-color: #252525;
+            border-radius: 10px;
+            padding: 35px 20px;
+            text-align: center;
+
+            text-decoration: none;
+            color: white;
+
+            transition: 0.2s;
+        }
+
+        .admin-card:hover {
+            background-color: #333333;
+            transform: translateY(-5px);
+        }
+
+        .admin-card h2 {
+            color: #ffc2c2;
+            margin-bottom: 15px;
+        }
+
+        .admin-card p {
+            color: #cccccc;
+            line-height: 1.5;
+        }
+
+        .manage-button {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+
+            background-color: #5d2236;
+            color: white;
+
+            border-radius: 5px;
+        }
+
+        .admin-card:hover .manage-button {
+            background-color: #7a2d48;
+        }
+
+        .admin-banner {
+            width: 100%;
+            height: 60px;
+            background-color: #5d2236;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            box-sizing: border-box;
+            border-bottom: 1px solid #333333;
+            justify-content: center;
+        }
+
+        .admin-home {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 18px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            font-family: Arial, sans-serif;
+            background-color: transparent;
+            border: none;
+        }
+
+        .admin-home:hover {
+            background-color: #7a2d48;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div th:fragment="adminNav" class="admin-banner">
+        <a th:href="@{/admin}" class="admin-home"> Admin Home </a>
+        <a th:href="@{/admin/movies}" class="admin-home">Movies</a>
+        <a th:href="@{/admin/halls}" class="admin-home">Halls</a>
+        <a th:href="@{/admin/showtimes}" class="admin-home">Showtimes</a>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="admin-home">
+                Logout
+            </button>
+        </form>
+    </div>
+
+    <h1>Admin Dashboard</h1>
+
+    <p class="subtitle">
+        Manage the movie reservation system
+    </p>
+
+
+
+    <div class="admin-container">
+
+        <!-- Movies -->
+        <a th:href="@{/admin/movies}" class="admin-card">
+
+            <h2>Movies</h2>
+
+            <p>
+                Add, edit, delete and view movies.
+            </p>
+
+            <span class="manage-button">
+                Manage Movies
+            </span>
+
+        </a>
+
+
+        <!-- Halls -->
+        <a th:href="@{/admin/halls}" class="admin-card">
+
+            <h2>Halls</h2>
+
+            <p>
+                Add, edit, delete and view cinema halls.
+            </p>
+
+            <span class="manage-button">
+                Manage Halls
+            </span>
+
+        </a>
+
+
+        <!-- Showtimes -->
+        <a th:href="@{/admin/showtimes}" class="admin-card">
+
+            <h2>Showtimes</h2>
+
+            <p>
+                Add, edit, delete and view movie showtimes.
+            </p>
+
+            <span class="manage-button">
+                Manage Showtimes
+            </span>
+
+        </a>
+
+    </div>
+
+</body>
+
+</html>

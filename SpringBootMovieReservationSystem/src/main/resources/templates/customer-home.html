@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Home</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #191919;
+            color: white;
+        }
+
+        /* Top Banner */
+        .top-banner {
+            width: 100%;
+            height: 65px;
+            background-color: #111111;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 35px;
+            border-bottom: 1px solid #333333;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .logout-button {
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            background-color: #333333;
+            transition: background-color 0.2s;
+        }
+
+        .logout-button:hover {
+            background-color: #555555;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1000px;
+            margin: 60px auto;
+            padding: 0 30px;
+            text-align: center;
+        }
+
+        .welcome {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #aaaaaa;
+            font-size: 17px;
+            margin-bottom: 45px;
+        }
+
+        /* Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .card {
+            background-color: #222222;
+            border: 1px solid #333333;
+            border-radius: 10px;
+            padding: 35px 25px;
+
+            text-decoration: none;
+            color: white;
+
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .card:hover {
+            background-color: #2b2b2b;
+            transform: translateY(-4px);
+        }
+
+        .card h2 {
+            margin: 0 0 12px;
+            font-size: 22px;
+        }
+
+        .card p {
+            margin: 0;
+            color: #aaaaaa;
+            font-size: 15px;
+        }
+
+        @media (max-width: 700px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .admin-banner {
+            width: 100%;
+            height: 60px;
+            background-color: #5d2236;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            box-sizing: border-box;
+            border-bottom: 1px solid #333333;
+            justify-content: center;
+        }
+
+        .admin-home {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 18px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            font-family: Arial, sans-serif;
+            background-color: transparent;
+            border: none;
+        }
+
+        .admin-home:hover {
+            background-color: #7a2d48;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div th:fragment="adminNav" class="admin-banner">
+        <a th:href="@{/customer/home}" class="admin-home">Home </a>
+        <a th:href="@{/customer/movies}" class="admin-home">Movies</a>
+        <a th:href="@{/customer/reservations/list}" class="admin-home">My Reservations</a>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="admin-home">
+                Logout
+            </button>
+        </form>
+    </div>
+
+
+    <!-- Main Content -->
+    <div class="container">
+
+        <h1 class="welcome">
+            Welcome!
+        </h1>
+
+        <p class="subtitle">
+            What would you like to do?
+        </p>
+
+
+        <div class="cards">
+
+            <a th:href="@{/customer/movies}" class="card">
+
+                <h2>Browse Movies</h2>
+
+                <p>
+                    View available movies and their showtimes.
+                </p>
+
+            </a>
+
+
+            <a th:href="@{/customer/reservations/list}" class="card">
+
+                <h2>My Reservations</h2>
+
+                <p>
+                    View and manage your movie reservations.
+                </p>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Reservations</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #191919;
+            color: white;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 60px auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .reservations {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .reservation-card {
+            background-color: #252525;
+            border-radius: 10px;
+            padding: 25px;
+        }
+
+        .reservation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            border-bottom: 1px solid #444444;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .reservation-header h2 {
+            margin: 0;
+        }
+
+        .reservation-id {
+            color: #ffc2c2;
+            font-size: 14px;
+        }
+
+        .reservation-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .info-item {
+            background-color: #333333;
+            border-radius: 5px;
+            padding: 15px;
+        }
+
+        .info-label {
+            color: #aaaaaa;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .info-value {
+            color: white;
+            font-size: 16px;
+        }
+
+        .seats-container {
+            margin-top: 20px;
+        }
+
+        .seats-title {
+            color: #aaaaaa;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .seats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .seat {
+            background-color: #5d2236;
+            color: white;
+
+            padding: 8px 14px;
+            border-radius: 5px;
+
+            font-size: 14px;
+        }
+
+        .empty {
+            text-align: center;
+            background-color: #252525;
+            border-radius: 10px;
+            padding: 50px;
+
+            color: #aaaaaa;
+        }
+
+        .back-button {
+            display: block;
+            width: fit-content;
+
+            margin: 30px auto 0;
+
+            padding: 12px 25px;
+
+            background-color: #5d2236;
+            color: white;
+
+            border-radius: 5px;
+
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .back-button:hover {
+            background-color: #7a2d48;
+        }
+
+        .admin-banner {
+            width: 100%;
+            height: 60px;
+            background-color: #5d2236;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            box-sizing: border-box;
+            border-bottom: 1px solid #333333;
+            justify-content: center;
+        }
+
+        .admin-home {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 18px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            font-family: Arial, sans-serif;
+            background-color: transparent;
+            border: none;
+        }
+
+        .admin-home:hover {
+            background-color: #7a2d48;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div th:fragment="adminNav" class="admin-banner">
+        <a th:href="@{/customer/home}" class="admin-home">Home </a>
+        <a th:href="@{/customer/movies}" class="admin-home">Movies</a>
+        <a th:href="@{/customer/reservations/list}" class="admin-home">My Reservations</a>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="admin-home">
+                Logout
+            </button>
+        </form>
+    </div>
+
+    <div class="container">
+
+        <h1>My Reservations</h1>
+
+
+        <!-- Reservations exist -->
+
+        <div class="reservations" th:if="${!reservations.isEmpty()}">
+
+            <div class="reservation-card" th:each="reservation : ${reservations}">
+
+                <!-- Header -->
+
+                <div class="reservation-header">
+
+                    <h2 th:text="${reservation.showtime.movie.movieName}">
+                        Movie Name
+                    </h2>
+
+                    <span class="reservation-id" th:text="'Reservation #' + ${reservation.id}">
+                        Reservation #1
+                    </span>
+
+                </div>
+
+
+                <!-- Reservation Information -->
+
+                <div class="reservation-info">
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            Hall
+                        </div>
+
+                        <div class="info-value" th:text="${reservation.showtime.hall.id}">
+                            1
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            Showtime
+                        </div>
+
+                        <div class="info-value" th:text="${reservation.showtime.startTime}">
+                            18:00
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Seats -->
+
+                <div class="seats-container">
+
+                    <div class="seats-title">
+                        Reserved Seats
+                    </div>
+
+                    <div class="seats">
+
+                        <span class="seat" th:each="seat : ${reservation.seats}" th:text="${seat}">
+                            1A
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- No Reservations -->
+
+        <div class="empty" th:if="${reservations.isEmpty()}">
+
+            You have no reservations yet.
+
+        </div>
+
+
+        <!-- Back -->
+
+        <a th:href="@{/customer/movies}" class="back-button">
+            Back to Movies
+        </a>
+
+    </div>
+
+</body>
+
+</html>

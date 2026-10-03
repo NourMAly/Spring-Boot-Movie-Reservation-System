@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Movies Management</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #191919;
+            color: white;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .actions {
+            width: 90%;
+            max-width: 1100px;
+            margin: 0 auto 30px;
+
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .actions form {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+        }
+
+        input {
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+
+        .search-input {
+            flex: 1;
+        }
+
+        .movies-container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .movie-card {
+            background-color: #252525;
+            border-radius: 10px;
+            overflow: hidden;
+            padding-bottom: 20px;
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 375px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .movie-info {
+            padding: 15px;
+        }
+
+        .movie-info h2 {
+            margin-top: 0;
+        }
+
+        .movie-info p {
+            color: #cccccc;
+        }
+
+        .runtime {
+            color: #ffc2c2;
+        }
+
+        .delete-button {
+            display: block;
+            width: 250px;
+            margin: 0 auto;
+
+            padding: 12px 20px;
+            background-color: #5d2236;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+
+        }
+
+        .delete-button:hover {
+            background-color: #9b3859;
+        }
+
+        button,
+        .add-button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+
+            background-color: #5d2236;
+            color: white;
+
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 15px;
+
+        }
+
+        button:hover,
+        .add-button:hover {
+            background-color: #7a2d48;
+        }
+
+        .add-button {
+            display: inline-block;
+        }
+
+        .admin-banner {
+            width: 100%;
+            height: 60px;
+            background-color: #5d2236;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            box-sizing: border-box;
+            border-bottom: 1px solid #333333;
+            justify-content: center;
+        }
+
+        .admin-home {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 18px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .admin-home:hover {
+            background-color: #7a2d48;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div th:fragment="adminNav" class="admin-banner">
+        <a th:href="@{/admin}" class="admin-home"> Admin Home </a>
+        <a th:href="@{/admin/movies}" class="admin-home">Movies</a>
+        <a th:href="@{/admin/halls}" class="admin-home">Halls</a>
+        <a th:href="@{/admin/showtimes}" class="admin-home">Showtimes</a>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="admin-home">
+                Logout
+            </button>
+        </form>
+    </div>
+
+    <h1>Movies Management</h1>
+
+    <!-- Actions -->
+    <div class="actions">
+
+        <!-- Search -->
+        <form th:action="@{/admin/movies/search}" method="get">
+
+            <input type="number" name="id" class="search-input" placeholder="Enter movie ID" min="1" required>
+
+            <button type="submit">
+                Search
+            </button>
+
+        </form>
+
+
+        <!-- Add Hall -->
+        <a th:href="@{/admin/movies/add}" class="add-button">
+            Add Movie
+        </a>
+        <!-- Error message -->
+        <p th:if="${error}" th:text="${error}" style="text-align: center; color: #ffc2c2;"> </p>
+    </div>
+
+    <div class="movies-container">
+
+        <div class="movie-card" th:each="movie : ${movies}">
+
+            <img th:src="@{/images/{poster}(poster=${movie.posterURL})}" th:alt="${movie.movieName}">
+
+            <div class="movie-info">
+
+                <h2 th:text="${movie.movieName}">
+                    Movie Name
+                </h2>
+
+                <p th:text="${movie.genre}">
+                    Genre
+                </p>
+
+                <p th:text="${movie.description}">
+                    Description
+                </p>
+
+                <p class="runtime">
+                    Runtime:
+                    <span th:text="${movie.runTimeInMinutes}">
+                        120
+                    </span>
+                    minutes
+                </p>
+
+                <!-- Delete -->
+                <form th:action="@{/admin/movies/delete/{id}(id=${movie.id})}" method="post">
+
+                    <button type="submit" class="delete-button">
+                        Delete Movie
+                    </button>
+
+                </form>
+                <br>
+                <!-- Edit -->
+                <form th:action="@{/admin/movies/edit/{id}(id=${movie.id})}" method="post">
+
+                    <button type="submit" class="delete-button">
+                        Edit Movie
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

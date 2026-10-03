@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add Movie</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #191919;
+            color: white;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            margin: 80px auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-card {
+            background-color: #252525;
+            border-radius: 10px;
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffc2c2;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+
+            padding: 12px;
+
+            border: none;
+            border-radius: 5px;
+
+            background-color: #333333;
+            color: white;
+
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: 2px solid #5d2236;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        button,
+        .cancel-button {
+            flex: 1;
+
+            padding: 12px;
+
+            border: none;
+            border-radius: 5px;
+
+            background-color: #5d2236;
+            color: white;
+
+            font-size: 15px;
+            text-align: center;
+            text-decoration: none;
+
+            cursor: pointer;
+        }
+
+        button:hover,
+        .cancel-button:hover {
+            background-color: #7a2d48;
+        }
+        
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Add Movie</h1>
+
+        <div class="form-card">
+
+            <form th:action="@{/admin/movies/add}"
+                  th:object="${movie}"
+                  method="post">
+
+                <div class="form-group">
+
+                    <label for="movieName">
+                        Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="movieName"
+                        th:field="*{movieName}"
+                        placeholder="Enter movie name"
+                        required>
+
+                    <label for="genre">
+                        Genre
+                    </label>
+
+                    <input
+                        type="text"
+                        id="genre"
+                        th:field="*{genre}"
+                        placeholder="Enter movie genre"
+                        required>
+
+                    <label for="posterURL">
+                        Poster URL
+                    </label>
+
+                    <input
+                        type="text"
+                        id="posterURL"
+                        th:field="*{posterURL}"
+                        placeholder="Enter movie poster url"
+                        required>
+
+                    <label for="description">
+                        Description
+                    </label>
+
+                    <input
+                        type="text"
+                        id="description"
+                        th:field="*{description}"
+                        placeholder="Enter movie description"
+                        required>
+
+                    <label for="runTimeInMinutes">
+                        Runtime
+                    </label>
+
+                    <input
+                        type="number"
+                        id="runTimeInMinutes"
+                        th:field="*{runTimeInMinutes}"
+                        placeholder="Enter movie runtime in minutes"
+                        required>
+
+                </div>
+
+
+                <div class="buttons">
+
+                    <button type="submit">
+                        Add Movie
+                    </button>
+
+                    <a th:href="@{/admin/movies}"
+                       class="cancel-button">
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

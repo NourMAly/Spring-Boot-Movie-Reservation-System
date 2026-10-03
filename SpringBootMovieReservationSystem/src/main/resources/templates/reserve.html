@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Make Reservation</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #191919;
+            color: white;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 60px auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .reservation-card {
+            background-color: #252525;
+            border-radius: 10px;
+            padding: 30px;
+        }
+
+        .movie-info {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .movie-info h2 {
+            margin: 0 0 15px;
+        }
+
+        .movie-info p {
+            color: #ffc2c2;
+            margin: 5px 0;
+        }
+
+        .section-title {
+            margin-bottom: 15px;
+        }
+
+        /* Seats */
+
+        .seats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .seat {
+            height: 45px;
+        }
+
+        /* Available seat */
+
+        .available-seat input {
+            display: none;
+        }
+
+        .available-seat label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            height: 45px;
+
+            background-color: #333333;
+            color: white;
+
+            border-radius: 5px;
+            cursor: pointer;
+
+            transition: background-color 0.2s;
+        }
+
+        .available-seat label:hover {
+            background-color: #444444;
+        }
+
+        .available-seat input:checked+label {
+            background-color: #5d2236;
+        }
+
+        /* Reserved seat */
+
+        .reserved-seat {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            height: 45px;
+
+            background-color: #555555;
+            color: #999999;
+
+            border-radius: 5px;
+
+            cursor: not-allowed;
+        }
+
+        /* Screen */
+
+        .screen {
+            text-align: center;
+            padding: 10px;
+            margin-bottom: 30px;
+
+            background-color: #333333;
+            border-radius: 5px;
+
+            color: #ffc2c2;
+        }
+
+        /* Legend */
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+
+            margin-bottom: 30px;
+
+            color: #cccccc;
+            font-size: 14px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-box {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+        }
+
+        .available-box {
+            background-color: #333333;
+        }
+
+        .selected-box {
+            background-color: #5d2236;
+        }
+
+        .reserved-box {
+            background-color: #555555;
+        }
+
+        /* Buttons */
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        button,
+        .cancel-button {
+            flex: 1;
+
+            padding: 12px;
+
+            border: none;
+            border-radius: 5px;
+
+            background-color: #5d2236;
+            color: white;
+
+            font-size: 15px;
+            text-align: center;
+            text-decoration: none;
+
+            cursor: pointer;
+        }
+
+        button:hover,
+        .cancel-button:hover {
+            background-color: #7a2d48;
+        }
+
+        .cancel-button {
+            box-sizing: border-box;
+        }
+
+        .no-seats {
+            text-align: center;
+            color: #aaaaaa;
+            padding: 20px;
+        }
+
+        .admin-banner {
+            width: 100%;
+            height: 60px;
+            background-color: #5d2236;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            box-sizing: border-box;
+            border-bottom: 1px solid #333333;
+            justify-content: center;
+        }
+
+        .admin-home {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 18px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            font-family: Arial, sans-serif;
+            background-color: transparent;
+            border: none;
+        }
+
+        .admin-home:hover {
+            background-color: #7a2d48;
+        }
+    </style>
+</head>
+
+<body>
+    <div th:fragment="adminNav" class="admin-banner">
+        <a th:href="@{/customer/home}" class="admin-home">Home </a>
+        <a th:href="@{/customer/movies}" class="admin-home">Movies</a>
+        <a th:href="@{/customer/reservations}" class="admin-home">My Reservations</a>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="admin-home">
+                Logout
+            </button>
+        </form>
+    </div>
+
+    <div class="container">
+
+        <h1>Make Reservation</h1>
+
+        <div class="reservation-card">
+
+            <!-- Movie Information -->
+
+            <div class="movie-info">
+
+                <h2 th:text="${movie.movieName}">
+                    Movie Name
+                </h2>
+
+                <p>
+                    Hall
+                    <span th:text="${showtime.hall.id}">
+                        1
+                    </span>
+                </p>
+
+                <p th:text="${showtime.startTime}">
+                    18:00
+                </p>
+
+            </div>
+
+
+            <!-- Screen -->
+
+            <div class="screen">
+                SCREEN
+            </div>
+
+
+            <!-- Legend -->
+
+            <div class="legend">
+
+                <div class="legend-item">
+                    <div class="legend-box available-box"></div>
+                    <span>Available</span>
+                </div>
+
+                <div class="legend-item">
+                    <div class="legend-box selected-box"></div>
+                    <span>Selected</span>
+                </div>
+
+                <div class="legend-item">
+                    <div class="legend-box reserved-box"></div>
+                    <span>Reserved</span>
+                </div>
+
+            </div>
+
+
+            <h3 class="section-title">
+                Select Your Seats
+            </h3>
+
+
+            <form th:action="@{/customer/reservations/book}" method="post">
+
+                <!-- Showtime -->
+
+                <input type="hidden" name="showtimeId" th:value="${showtime.id}">
+
+
+                <!-- Seats -->
+
+                <div class="seats">
+
+                    <th:block th:each="seat : ${showtime.hall.seats}">
+
+                        <!-- AVAILABLE SEAT -->
+
+                        <div class="seat available-seat" th:if="${!reservedSeats.contains(seat)}">
+
+                            <input type="checkbox" name="seats" th:id="${'seat-' + seat}" th:value="${seat}">
+
+                            <label th:for="${'seat-' + seat}" th:text="${seat}">
+                                1A
+                            </label>
+
+                        </div>
+
+
+                        <!-- RESERVED SEAT -->
+
+                        <div class="seat reserved-seat" th:if="${reservedSeats.contains(seat)}" th:text="${seat}">
+
+                            1A
+
+                        </div>
+
+                    </th:block>
+
+                </div>
+
+
+                <!-- Buttons -->
+
+                <div class="buttons">
+
+                    <button type="submit">
+                        Confirm Reservation
+                    </button>
+
+                    <a th:href="@{/customer/movies}" class="cancel-button">
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

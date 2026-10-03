@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Showtimes Management</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #191919;
+            color: white;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .actions {
+            width: 90%;
+            max-width: 1100px;
+            margin: 0 auto 30px;
+
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .actions form {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+        }
+
+        input {
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+
+        .search-input {
+            flex: 1;
+        }
+
+        button,
+        .add-button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+
+            background-color: #5d2236;
+            color: white;
+
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        button:hover,
+        .add-button:hover {
+            background-color: #7a2d48;
+        }
+
+        .add-button {
+            display: inline-block;
+        }
+
+        .showtimes-container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .showtime-card {
+            background-color: #252525;
+            border-radius: 10px;
+            padding: 25px;
+        }
+
+        .showtime-card h2 {
+            margin-top: 0;
+            color: #ffc2c2;
+        }
+
+        .showtime-info {
+            color: #cccccc;
+            margin-bottom: 15px;
+        }
+
+        .delete-button {
+            margin-top: 20px;
+            background-color: #7a2d48;
+            width: 100%;
+        }
+
+        .delete-button:hover {
+            background-color: #9b3859;
+        }
+
+        .no-showtimes {
+            text-align: center;
+            color: #ffc2c2;
+            margin-top: 40px;
+        }
+
+        .admin-banner {
+            width: 100%;
+            height: 60px;
+            background-color: #5d2236;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            box-sizing: border-box;
+            border-bottom: 1px solid #333333;
+            justify-content: center;
+        }
+
+        .admin-home {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 18px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .admin-home:hover {
+            background-color: #7a2d48;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div th:fragment="adminNav" class="admin-banner">
+        <a th:href="@{/admin}" class="admin-home"> Admin Home </a>
+        <a th:href="@{/admin/movies}" class="admin-home">Movies</a>
+        <a th:href="@{/admin/halls}" class="admin-home">Halls</a>
+        <a th:href="@{/admin/showtimes}" class="admin-home">Showtimes</a>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="admin-home">
+                Logout
+            </button>
+        </form>
+    </div>
+
+    <h1>Showtimes Management</h1>
+
+
+    <!-- Actions -->
+    <div class="actions">
+
+        <!-- Search -->
+        <form th:action="@{/admin/showtimes/search}" method="get">
+
+            <input type="number" name="id" class="search-input" placeholder="Enter showtime ID" required>
+
+            <button type="submit">
+                Search
+            </button>
+
+        </form>
+
+
+        <!-- Add Showtime -->
+        <a th:href="@{/admin/showtimes/add}" class="add-button">
+            Add Showtime
+        </a>
+
+    </div>
+
+
+    <!-- Showtime -->
+    <div class="showtimes-container">
+
+        <div class="showtime-card" th:each="showtime : ${showtimes}">
+
+            <h2>
+                Showtime
+                <span th:text="${showtime.id}">
+                    1
+                </span>
+            </h2>
+
+            <p class="showtime-info">
+                Hall number:
+                <strong th:text="${showtime.hall.id}">
+                    20
+                </strong>
+            </p>
+
+            <p class="showtime-info">
+                Start time:
+                <strong th:text="${showtime.startTime}">
+                    20
+                </strong>
+            </p>
+
+            <p class="showtime-info">
+                Movie name:
+                <strong th:text="${showtime.movie.movieName}">
+                    20
+                </strong>
+            </p>
+
+            <!-- Delete -->
+            <form th:action="@{/admin/showtimes/delete/{id}(id=${showtime.id})}" method="post">
+
+                <button type="submit" class="delete-button">
+                    Delete Showtime
+                </button>
+
+            </form>
+            <br>
+            <!-- Edit -->
+            <form th:action="@{/admin/showtimes/edit/{id}(id=${showtime.id})}" method="get">
+
+                <button type="submit" class="delete-button">
+                    Edit Showtime
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- No showtimes -->
+    <p class="no-showtimes" th:if="${#lists.isEmpty(showtimes)}">
+        No showtimes found.
+    </p>
+
+</body>
+
+</html>

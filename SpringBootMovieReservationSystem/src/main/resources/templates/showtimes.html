@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Showtimes</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #191919;
+            color: white;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 60px auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            margin-top: 0px;
+        }
+
+        .movie-name {
+            text-align: center;
+            color: #ffc2c2;
+            margin-bottom: 35px;
+            font-size: 18px;
+        }
+
+        .showtimes-card {
+            background-color: #252525;
+            border-radius: 10px;
+            padding: 30px;
+        }
+
+        .showtimes-card h2 {
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .showtime {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            background-color: #333333;
+            border-radius: 6px;
+
+            padding: 15px 20px;
+            margin-bottom: 12px;
+        }
+
+        .showtime-info {
+            display: flex;
+            gap: 35px;
+            align-items: center;
+        }
+
+        .showtime-info span {
+            color: white;
+        }
+
+        .hall {
+            color: #ffc2c2;
+        }
+
+        .book-button {
+            padding: 10px 18px;
+
+            border: none;
+            border-radius: 5px;
+
+            background-color: #5d2236;
+            color: white;
+
+            font-size: 15px;
+            text-decoration: none;
+
+            cursor: pointer;
+        }
+
+        .book-button:hover {
+            background-color: #7a2d48;
+        }
+
+        .no-showtimes {
+            text-align: center;
+            color: #aaaaaa;
+            padding: 25px;
+        }
+
+        .back-button {
+            display: block;
+            width: fit-content;
+
+            margin: 25px auto 0;
+
+            padding: 12px 25px;
+
+            border-radius: 5px;
+
+            background-color: #5d2236;
+            color: white;
+
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            background-color: #7a2d48;
+        }
+
+        .movies-container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .movie-card {
+            background-color: #252525;
+            border-radius: 10px;
+            overflow: hidden;
+            padding-bottom: 20px;
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 375px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .movie-info {
+            padding: 15px;
+        }
+
+        .movie-info h2 {
+            margin-top: 0;
+        }
+
+        .movie-info p {
+            color: #cccccc;
+        }
+
+        .runtime {
+            color: #ffc2c2;
+        }
+
+        .admin-banner {
+            width: 100%;
+            height: 60px;
+            background-color: #5d2236;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            box-sizing: border-box;
+            border-bottom: 1px solid #333333;
+            justify-content: center;
+        }
+
+        .admin-home {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 18px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            font-family: Arial, sans-serif;
+            background-color: transparent;
+            border: none;
+        }
+
+        .admin-home:hover {
+            background-color: #7a2d48;
+        }
+    </style>
+</head>
+
+<body>
+    <div th:fragment="adminNav" class="admin-banner">
+        <a th:href="@{/customer/home}" class="admin-home">Home </a>
+        <a th:href="@{/customer/movies}" class="admin-home">Movies</a>
+        <a th:href="@{/customer/reservations/list}" class="admin-home">My Reservations</a>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="admin-home">
+                Logout
+            </button>
+        </form>
+    </div>
+
+    <div class="container">
+        <h1>Movie Showtimes</h1>
+
+
+        <div class="showtimes-card">
+
+
+            <img th:src="@{/images/{poster}(poster=${movie.posterURL})}" th:alt="${movie.movieName}">
+
+            <div class="movie-info">
+
+                <h2 th:text="${movie.movieName}">
+                </h2>
+
+                <p th:text="${movie.genre}">
+                </p>
+
+                <p th:text="${movie.description}">
+                </p>
+
+                <p class="runtime">
+                    Runtime:
+                    <span th:text="${movie.runTimeInMinutes}">
+                        120
+                    </span>
+                    minutes
+                </p>
+
+            </div>
+
+            <h2>Available Showtimes</h2>
+
+            <!-- Showtimes -->
+            <div th:if="${!showtimes.isEmpty()}">
+
+                <div class="showtime" th:each="showtime : ${showtimes}">
+
+                    <div class="showtime-info">
+
+                        <span th:text="${showtime.startTime}">
+                            18:00
+                        </span>
+
+                        <span class="hall">
+                            Hall
+                            <span th:text="${showtime.hall.id}">
+                                1
+                            </span>
+                        </span>
+
+                    </div>
+
+                    <a th:href="@{/customer/movies/book/{id}/{username}(id=${showtime.id},username=${#authentication.name})}"
+                        class="book-button">
+                        Book
+                    </a>
+
+                </div>
+
+            </div>
+            <!-- No Showtimes -->
+            <div th:if="${showtimes.isEmpty()}" class="no-showtimes">
+
+                No showtimes are currently available for this movie.
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

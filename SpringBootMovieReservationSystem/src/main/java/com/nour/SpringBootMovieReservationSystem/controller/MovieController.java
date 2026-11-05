@@ -18,23 +18,25 @@ public class MovieController {
         this.movieService = movieService;
     }
 
-    @GetMapping("/movies")
-    public String getAllMovies(Model model) {
-        List<Movie> movies = movieService.findAllMovies();
-        model.addAttribute("movies", movies);
-        return "movies";
-    }
-
-    @GetMapping("/movies/search")
-    public String getMoviesByName(@RequestParam String name, Model model) {
-        List<Movie> movies = movieService.findMoviesByName(name);
-        if (movies == null) {
-            model.addAttribute("error", "Movie not found");
-            return "movies";
-        }
-
-        model.addAttribute("movies", movies);
-
-        return "movies";
-    }
+    /*
+     * @GetMapping("/movies")
+     * public String getAllMovies(Model model) {
+     * List<Movie> movies = movieService.findAllMovies();
+     * model.addAttribute("movies", movies);
+     * return "movies";
+     * }
+     * 
+     * @GetMapping("/movies/search")
+     * public String getMoviesByName(@RequestParam String name, Model model) {
+     * List<Movie> movies = movieService.findMoviesByName(name);
+     * if (movies == null) {
+     * model.addAttribute("error", "Movie not found");
+     * return "movies";
+     * }
+     * 
+     * model.addAttribute("movies", movies);
+     * 
+     * return "movies";
+     * }
+     */
 }

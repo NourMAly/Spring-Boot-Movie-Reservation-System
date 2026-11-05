@@ -1,0 +1,208 @@
+CREATE DATABASE  IF NOT EXISTS `movie_db_spring_boot`;
+USE `movie_db_spring_boot`;
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+
+--
+-- Table structure for table `employee`
+--
+
+DROP TABLE IF EXISTS `employee`;
+
+CREATE TABLE `employee` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(45) DEFAULT NULL,
+  `last_name` varchar(45) DEFAULT NULL,
+  `email` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+
+--
+-- Table structure for table `movie`
+--
+
+DROP TABLE IF EXISTS `movie`;
+
+CREATE TABLE `movie` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) DEFAULT NULL,
+  `genre` varchar(100) DEFAULT NULL,
+  `posterURL` varchar(200) DEFAULT NULL,
+  `description` varchar(500) DEFAULT NULL,
+  `runtimeinminutes` int DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+
+INSERT INTO `movie` VALUES 
+	(1,'The Odyssey','Action/Fantasy','TheOdyssey.png','Odysseus, king of Ithaca, embarks on a perilous journey to return home after the Trojan War. Crossing the Mediterranean Sea with his fellow soldiers, they soon find themselves battling not only the elements, but an array of deadly obstacles and mythical creatures along the way.','173'),
+	(2,'Spider-Man: Brand New Day','Action','SpidermanBND.png','It is a BRAND NEW DAY for Peter Parker. Fighting crime full-time as Spider-Man in a world that doesn’t remember him -- and the pressure of seeing his old friends move on without him -- sparks a change in Peter he may not have the power to control. But that transformation might also be the only thing that can stop a shocking new threat to the city and those he loves - a powerful villain no one can even see.','145'),
+	(3,'Moana','Action','moana.png','Live-action adaptation of the 2016 Disney animated film Moana.','115'),
+	(4,'Toy Story 5','Animation','ToyStory5.png','Woody, Buzz, Jessie and the rest of the gangs jobs are challenged when they are introduced to electronics, a new threat to playtime.','100'),
+	(5,'Minions & Monsters','Animation','MinionsandMonsters.png','This is the rambunctious, ridiculous and totally true story of how the Minions conquered Hollywood, became movie stars, lost everything, unleashed monsters onto the world and then banded together to try and save the planet from the mayhem they had just created.','90');
+
+
+--
+-- Table structure for table `hall`
+--
+
+DROP TABLE IF EXISTS `hall`;
+
+CREATE TABLE `hall` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `number_of_seats` int DEFAULT NULL,
+  `seats` JSON DEFAULT NULL,
+  PRIMARY KEY (`id`)
+  ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO hall(number_of_seats,seats) values
+(20, JSON_ARRAY(
+'A1','A2','A3','A4','A5',
+'B1','B2','B3','B4','B5',
+'C1','C2','C3','C4','C5',
+'D1','D2','D3','D4','D5'
+)),
+(30, JSON_ARRAY(
+'A1','A2','A3','A4','A5','A6',
+'B1','B2','B3','B4','B5','B6',
+'C1','C2','C3','C4','C5','C6',
+'D1','D2','D3','D4','D5','D6',
+'E1','E2','E3','E4','E5','E6'
+));
+--
+-- Table structure for table `showtime`
+--
+
+DROP TABLE IF EXISTS `showtime`;
+
+CREATE TABLE `showtime` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `hall_number` int DEFAULT NULL,
+  `start_time` time DEFAULT NULL,
+  `movie_id` int DEFAULT NULL,
+  `show_date` DATE NOT NULL DEFAULT(CURRENT_DATE),
+  `price` DECIMAL(8,2) NOT NULL DEFAULT 0.00,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_movie_showtime` FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_halls_showtimes` FOREIGN KEY (`hall_number`) references `hall`(`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO showtime (hall_number, start_time, movie_id, show_date, price)
+VALUES
+(1, '10:00:00', 1, '2026-11-06', 120.00),
+(2, '10:30:00', 2, '2026-11-06', 130.00),
+
+(1, '13:00:00', 3, '2026-11-06', 150.00),
+(2, '13:30:00', 4, '2026-11-06', 140.00),
+
+(1, '16:00:00', 2, '2026-11-06', 160.00),
+(2, '16:30:00', 5, '2026-11-06', 170.00),
+
+(1, '19:00:00', 4, '2026-11-06', 180.00),
+(2, '19:30:00', 1, '2026-11-06', 200.00),
+
+
+(1, '10:00:00', 5, '2026-11-07', 120.00),
+(2, '10:30:00', 3, '2026-11-07', 130.00),
+
+(1, '13:00:00', 1, '2026-11-07', 150.00),
+(2, '13:30:00', 2, '2026-11-07', 140.00),
+
+(1, '16:00:00', 4, '2026-11-07', 160.00),
+(2, '16:30:00', 5, '2026-11-07', 170.00),
+
+(1, '19:00:00', 3, '2026-11-07', 180.00),
+(2, '19:30:00', 1, '2026-11-07', 200.00),
+
+(1, '10:00:00', 2, '2026-11-08', 120.00),
+(2, '10:30:00', 4, '2026-11-08', 130.00),
+
+(1, '13:00:00', 5, '2026-11-08', 150.00),
+(2, '13:30:00', 3, '2026-11-08', 140.00);
+
+
+USE `movie_db_spring_boot`;
+
+DROP TABLE IF EXISTS `roles`;
+DROP TABLE IF EXISTS `customer`;
+
+--
+-- Table structure for table `members`
+--
+
+CREATE TABLE `customer` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(45) DEFAULT NULL,
+  `last_name` varchar(45) DEFAULT NULL,
+  `email` varchar(45) DEFAULT NULL,
+  `username` varchar(50) UNIQUE NOT NULL,
+  `pw` char(68) NOT NULL,
+  `active` tinyint NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Inserting data for table `members`
+--
+-- NOTE: The passwords are encrypted using BCrypt
+--
+-- A generation tool is avail at: https://www.luv2code.com/generate-bcrypt-password
+--
+-- Default passwords here are: fun123
+--
+
+INSERT INTO `customer`(first_name,last_name,email,username,pw,`active`)
+VALUES
+('Lois','Lane','ll@g.com','loislane','{bcrypt}$2a$10$qeS0HEh7urweMojsnwNAR.vcXJeXR1UcMRZ2WcGQl9YeuspUdgF.q',1),
+('Mary','Jane','mj@g.com','maryjane','{bcrypt}$2a$10$qeS0HEh7urweMojsnwNAR.vcXJeXR1UcMRZ2WcGQl9YeuspUdgF.q',1),
+('Patrick','Jane','pj@g.com','patrickjane','{bcrypt}$2a$10$qeS0HEh7urweMojsnwNAR.vcXJeXR1UcMRZ2WcGQl9YeuspUdgF.q',1),
+('Susan','Park','sp@g.com','susanpark','{bcrypt}$2a$10$qeS0HEh7urweMojsnwNAR.vcXJeXR1UcMRZ2WcGQl9YeuspUdgF.q',1),
+('Grace','Van Pelt','gvp@g.com','gracevanpelt','{bcrypt}$2a$10$qeS0HEh7urweMojsnwNAR.vcXJeXR1UcMRZ2WcGQl9YeuspUdgF.q',1),
+('Angela','Monty','am@g.com','angelamonty','{bcrypt}$2a$10$qeS0HEh7urweMojsnwNAR.vcXJeXR1UcMRZ2WcGQl9YeuspUdgF.q',1);
+
+
+--
+-- Table structure for table `authorities`
+--
+
+CREATE TABLE `roles` (
+  `username` varchar(50) NOT NULL,
+  `role` varchar(50) NOT NULL,
+  UNIQUE KEY `authorities5_idx_1` (`username`,`role`),
+  CONSTRAINT `authorities5_ibfk_1` FOREIGN KEY (`username`) REFERENCES `customer` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Inserting data for table `roles`
+--
+
+INSERT INTO `roles`
+VALUES
+('loislane','ROLE_EMPLOYEE'),
+('maryjane','ROLE_EMPLOYEE'),
+('patrickjane','ROLE_EMPLOYEE'),
+('susanpark','ROLE_CUSTOMER'),
+('gracevanpelt','ROLE_CUSTOMER'),
+('angelamonty','ROLE_CUSTOMER');
+
+--
+-- Table structure for table `reservation`
+--
+
+DROP TABLE IF EXISTS `reservation`;
+
+CREATE TABLE `reservation` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `showtime_id` int DEFAULT NULL,
+  `customer_id` int DEFAULT NULL,
+   `seat_label` Varchar(5) NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_customer_reservation` FOREIGN KEY (`customer_id`) REFERENCES `customer`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+CONSTRAINT `unique_seat_showtime` UNIQUE (showtime_id,seat_label),
+  CONSTRAINT `fk_showtimes_reservation` FOREIGN KEY (`showtime_id`) references `showtime`(`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+
+SET FOREIGN_KEY_CHECKS = 1;

@@ -60,6 +60,16 @@ public class ShowtimeDAOImpl implements ShowtimeDAO {
     }
 
     @Override
+    public List<Showtime> hallShowtimes(int hallId) {
+        TypedQuery<Showtime> query = entityManager
+                .createQuery(
+                        "FROM Showtime where hall.id=:hallId",
+                        Showtime.class);
+        query.setParameter("hallId", hallId);
+        return query.getResultList();
+    }
+
+    @Override
     public List<Showtime> getMovieShowtimes(int movieId) {
         TypedQuery<Showtime> query = entityManager.createQuery("FROM Showtime WHERE movie.id=:movieId", Showtime.class);
         query.setParameter("movieId", movieId);

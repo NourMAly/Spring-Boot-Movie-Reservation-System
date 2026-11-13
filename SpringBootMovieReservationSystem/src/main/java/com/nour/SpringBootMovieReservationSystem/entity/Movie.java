@@ -34,7 +34,7 @@ public class Movie {
     private String description;
 
     @Column(name = "runtimeinminutes")
-    private String runTimeInMinutes;
+    private Integer runTimeInMinutes;
 
     @OneToMany(mappedBy = "movie")
     private List<Showtime> showtimes = new ArrayList<>();
@@ -42,7 +42,7 @@ public class Movie {
     public Movie() {
     }
 
-    public Movie(String movieName, String genre, String posterURL, String description, String runTimeInMinutes) {
+    public Movie(String movieName, String genre, String posterURL, String description, Integer runTimeInMinutes) {
         this.movieName = movieName;
         this.genre = genre;
         this.posterURL = posterURL;
@@ -90,14 +90,6 @@ public class Movie {
         this.description = description;
     }
 
-    public String getRunTimeInMinutes() {
-        return runTimeInMinutes;
-    }
-
-    public void setRunTimeInMinutes(String runTimeInMinutes) {
-        this.runTimeInMinutes = runTimeInMinutes;
-    }
-
     public List<Showtime> getShowtimes() {
         return showtimes;
     }
@@ -110,6 +102,14 @@ public class Movie {
     public String toString() {
         return "Movie [id=" + id + ", movieName=" + movieName + ", genre=" + genre + ", posterURL=" + posterURL
                 + ", description=" + description + ", runTimeInMinutes=" + runTimeInMinutes + "]";
+    }
+
+    public Integer getRunTimeInMinutes() {
+        return runTimeInMinutes;
+    }
+
+    public void setRunTimeInMinutes(Integer runTimeInMinutes) {
+        this.runTimeInMinutes = runTimeInMinutes;
     }
 
 }

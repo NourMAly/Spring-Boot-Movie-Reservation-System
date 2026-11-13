@@ -12,8 +12,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "customer")
-public class Customer {
+@Table(name = "user")
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,13 +38,13 @@ public class Customer {
     @Column(name = "active")
     private boolean active;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "user")
     private List<Reservation> reservations = new ArrayList<>();
 
-    public Customer() {
+    public User() {
     }
 
-    public Customer(String firstName, String lastName, String email, String username, String pw, boolean active) {
+    public User(String firstName, String lastName, String email, String username, String pw, boolean active) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -111,7 +111,7 @@ public class Customer {
 
     @Override
     public String toString() {
-        return "Customer [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
+        return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
                 + ", username=" + username + ", pw=" + pw + ", active=" + active + ", reservations=" + reservations
                 + "]";
     }

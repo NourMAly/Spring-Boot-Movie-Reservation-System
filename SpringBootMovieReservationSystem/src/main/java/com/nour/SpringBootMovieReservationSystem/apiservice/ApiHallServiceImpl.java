@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.nour.SpringBootMovieReservationSystem.CustomException.HallNotFoundException;
 import com.nour.SpringBootMovieReservationSystem.dao.HallDAO;
 import com.nour.SpringBootMovieReservationSystem.dto.HallRequest;
 import com.nour.SpringBootMovieReservationSystem.dto.HallResponse;
@@ -36,12 +37,11 @@ public class ApiHallServiceImpl implements ApiHallService {
     @Override
     public List<HallResponse> findAllHalls() {
         List<Hall> halls = hallDao.findAllHalls();
-        if (halls.isEmpty()) {
-            throw new RuntimeException("No halls found.");
-        }
         List<HallResponse> responses = new ArrayList<>();
-        for (Hall h : halls) {
-            responses.add(new HallResponse(h.getId(), h.getNumberOfSeats(), h.getSeats()));
+        if (!halls.isEmpty()) {
+            for (Hall h : halls) {
+                responses.add(new HallResponse(h.getId(), h.getNumberOfSeats(), h.getSeats()));
+            }
         }
         return responses;
     }
@@ -50,7 +50,7 @@ public class ApiHallServiceImpl implements ApiHallService {
     public HallResponse findHallById(int id) {
         Hall h = hallDao.findHallById(id);
         if (h == null)
-            throw new RuntimeException("Hall not found with id: " + id);
+            throw new HallNotFoundException("Hall not found with id: " + id);
         return new HallResponse(h.getId(), h.getNumberOfSeats(), h.getSeats());
     }
 
@@ -58,6 +58,8 @@ public class ApiHallServiceImpl implements ApiHallService {
     @Transactional
     public HallResponse editHall(int id, HallRequest hallRequest) {
         Hall hall = hallDao.findHallById(id);
+        if (hall == null)
+            throw new HallNotFoundException("Hall not found with id: " + id);
         hall.setNumberOfSeats(hallRequest.numberOfSeats());
         hall.setSeats(hallRequest.seats());
         return new HallResponse(hall.getId(), hall.getNumberOfSeats(), hall.getSeats());
@@ -68,7 +70,7 @@ public class ApiHallServiceImpl implements ApiHallService {
     public void deleteHall(int id) {
         Hall h = hallDao.findHallById(id);
         if (h == null)
-            throw new RuntimeException("Hall not found with id: " + id);
+            throw new HallNotFoundException("Hall not found with id: " + id);
         hallDao.deleteHall(h);
     }
 

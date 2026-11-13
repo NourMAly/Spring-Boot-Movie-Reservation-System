@@ -3,22 +3,6 @@ USE `movie_db_spring_boot`;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
-
---
--- Table structure for table `employee`
---
-
-DROP TABLE IF EXISTS `employee`;
-
-CREATE TABLE `employee` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `first_name` varchar(45) DEFAULT NULL,
-  `last_name` varchar(45) DEFAULT NULL,
-  `email` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
-
-
 --
 -- Table structure for table `movie`
 --
@@ -104,39 +88,38 @@ VALUES
 (2, '19:30:00', 1, '2026-11-06', 200.00),
 
 
-(1, '10:00:00', 5, '2026-11-07', 120.00),
-(2, '10:30:00', 3, '2026-11-07', 130.00),
+(1, '10:00:00', 5, '2026-11-17', 120.00),
+(2, '10:30:00', 3, '2026-11-17', 130.00),
 
-(1, '13:00:00', 1, '2026-11-07', 150.00),
-(2, '13:30:00', 2, '2026-11-07', 140.00),
+(1, '13:00:00', 1, '2026-11-17', 150.00),
+(2, '13:30:00', 2, '2026-11-17', 140.00),
 
-(1, '16:00:00', 4, '2026-11-07', 160.00),
-(2, '16:30:00', 5, '2026-11-07', 170.00),
+(1, '16:00:00', 4, '2026-11-17', 160.00),
+(2, '16:30:00', 5, '2026-11-17', 170.00),
 
-(1, '19:00:00', 3, '2026-11-07', 180.00),
-(2, '19:30:00', 1, '2026-11-07', 200.00),
+(1, '19:00:00', 3, '2026-11-17', 180.00),
+(2, '19:30:00', 1, '2026-11-17', 200.00),
 
-(1, '10:00:00', 2, '2026-11-08', 120.00),
-(2, '10:30:00', 4, '2026-11-08', 130.00),
+(1, '10:00:00', 2, '2026-11-18', 120.00),
+(2, '10:30:00', 4, '2026-11-18', 130.00),
 
-(1, '13:00:00', 5, '2026-11-08', 150.00),
-(2, '13:30:00', 3, '2026-11-08', 140.00);
-
+(1, '13:00:00', 5, '2026-11-28', 150.00),
+(2, '13:30:00', 3, '2026-11-28', 140.00);
 
 USE `movie_db_spring_boot`;
 
 DROP TABLE IF EXISTS `roles`;
-DROP TABLE IF EXISTS `customer`;
+DROP TABLE IF EXISTS `user`;
 
 --
 -- Table structure for table `members`
 --
 
-CREATE TABLE `customer` (
+CREATE TABLE `user` (
   `id` int NOT NULL AUTO_INCREMENT,
   `first_name` varchar(45) DEFAULT NULL,
   `last_name` varchar(45) DEFAULT NULL,
-  `email` varchar(45) DEFAULT NULL,
+  `email` varchar(45) UNIQUE DEFAULT NULL,
   `username` varchar(50) UNIQUE NOT NULL,
   `pw` char(68) NOT NULL,
   `active` tinyint NOT NULL,
@@ -153,7 +136,7 @@ CREATE TABLE `customer` (
 -- Default passwords here are: fun123
 --
 
-INSERT INTO `customer`(first_name,last_name,email,username,pw,`active`)
+INSERT INTO `user`(first_name,last_name,email,username,pw,`active`)
 VALUES
 ('Lois','Lane','ll@g.com','loislane','{bcrypt}$2a$10$qeS0HEh7urweMojsnwNAR.vcXJeXR1UcMRZ2WcGQl9YeuspUdgF.q',1),
 ('Mary','Jane','mj@g.com','maryjane','{bcrypt}$2a$10$qeS0HEh7urweMojsnwNAR.vcXJeXR1UcMRZ2WcGQl9YeuspUdgF.q',1),
@@ -171,7 +154,7 @@ CREATE TABLE `roles` (
   `username` varchar(50) NOT NULL,
   `role` varchar(50) NOT NULL,
   UNIQUE KEY `authorities5_idx_1` (`username`,`role`),
-  CONSTRAINT `authorities5_ibfk_1` FOREIGN KEY (`username`) REFERENCES `customer` (`username`)
+  CONSTRAINT `authorities5_ibfk_1` FOREIGN KEY (`username`) REFERENCES `user` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -189,20 +172,42 @@ VALUES
 
 --
 -- Table structure for table `reservation`
+-- One row per seat; rows booked together share the same booking_ref
 --
 
 DROP TABLE IF EXISTS `reservation`;
 
 CREATE TABLE `reservation` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `showtime_id` int DEFAULT NULL,
-  `customer_id` int DEFAULT NULL,
-   `seat_label` Varchar(5) NOT NULL,
+  `booking_ref` CHAR(36) NOT NULL,
+  `showtime_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `seat_label` VARCHAR(5) NOT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_customer_reservation` FOREIGN KEY (`customer_id`) REFERENCES `customer`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-CONSTRAINT `unique_seat_showtime` UNIQUE (showtime_id,seat_label),
-  CONSTRAINT `fk_showtimes_reservation` FOREIGN KEY (`showtime_id`) references `showtime`(`id`)
+  KEY `ix_reservation_booking_ref` (`booking_ref`),
+  CONSTRAINT `unique_seat_showtime` UNIQUE (`showtime_id`, `seat_label`),
+  CONSTRAINT `fk_user_reservation` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_showtimes_reservation` FOREIGN KEY (`showtime_id`) REFERENCES `showtime`(`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
-
-
 SET FOREIGN_KEY_CHECKS = 1;
+
+
+
+
+
+DROP TABLE IF EXISTS `refresh_token`;
+
+CREATE TABLE refresh_token (
+  id INT NOT NULL AUTO_INCREMENT,
+  token_hash CHAR(64) NOT NULL,
+  username VARCHAR(50) NOT NULL,
+  family_id CHAR(36) NOT NULL,
+  expires_at DATETIME(6) NOT NULL,
+  revoked TINYINT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_rt_hash (token_hash),
+  KEY ix_rt_family (family_id),
+  KEY ix_rt_username (username),
+  CONSTRAINT fk_rt_userr FOREIGN KEY (username)
+    REFERENCES user(username) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

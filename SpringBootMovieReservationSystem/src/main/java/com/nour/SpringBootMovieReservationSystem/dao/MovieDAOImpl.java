@@ -2,6 +2,9 @@ package com.nour.SpringBootMovieReservationSystem.dao;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.nour.SpringBootMovieReservationSystem.entity.Movie;
@@ -53,6 +56,16 @@ public class MovieDAOImpl implements MovieDAO {
         TypedQuery<Movie> query = entityManager.createQuery("FROM Movie WHERE movieName LIKE :name", Movie.class);
         query.setParameter("name", "%" + name + "%");
         return query.getResultList();
+    }
+
+    @Override
+    public Page<Movie> findAllMoviesPaginated(Pageable pageable) {
+        TypedQuery<Movie> query = entityManager.createQuery("FROM Movie ORDER BY movieName", Movie.class);
+        query.setFirstResult((int) pageable.getOffset());
+        query.setMaxResults(pageable.getPageSize());
+        List<Movie> movies = query.getResultList();
+        Long totalElements = entityManager.createQuery("SELECT COUNT(m) FROM Movie m", Long.class).getSingleResult();
+        return new PageImpl<>(movies, pageable, totalElements);
     }
 
 }

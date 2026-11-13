@@ -11,37 +11,37 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.nour.SpringBootMovieReservationSystem.entity.Customer;
+import com.nour.SpringBootMovieReservationSystem.entity.User;
 import com.nour.SpringBootMovieReservationSystem.entity.Hall;
 import com.nour.SpringBootMovieReservationSystem.entity.Movie;
 import com.nour.SpringBootMovieReservationSystem.entity.Reservation;
 import com.nour.SpringBootMovieReservationSystem.entity.Showtime;
-import com.nour.SpringBootMovieReservationSystem.service.CustomerService;
+import com.nour.SpringBootMovieReservationSystem.service.UserService;
 import com.nour.SpringBootMovieReservationSystem.service.MovieService;
 import com.nour.SpringBootMovieReservationSystem.service.ReservationService;
 import com.nour.SpringBootMovieReservationSystem.service.ShowtimeService;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
-@RequestMapping("/customer")
-public class CustomerController {
+@RequestMapping("/user")
+public class UserController {
 
     private MovieService movieService;
     private ShowtimeService showtimeService;
-    private CustomerService customerService;
+    private UserService userService;
     private ReservationService reservationService;
 
-    public CustomerController(MovieService movieService, ShowtimeService showtimeService,
-            CustomerService customerService, ReservationService reservationService) {
+    public UserController(MovieService movieService, ShowtimeService showtimeService,
+            UserService userService, ReservationService reservationService) {
         this.movieService = movieService;
         this.showtimeService = showtimeService;
-        this.customerService = customerService;
+        this.userService = userService;
         this.reservationService = reservationService;
     }
 
     @GetMapping("/home")
-    public String showcustomerHome() {
-        return "customer-home";
+    public String showuserHome() {
+        return "user-home";
     }
 
     @GetMapping("/movies")
@@ -80,9 +80,9 @@ public class CustomerController {
         List<String> reservedSeats = reservationService.findReservedSeatsInShowtime(id);
         List<String> availableSeats = new ArrayList<>(allSeats);
         availableSeats.removeAll(reservedSeats);
-        Customer customer = customerService.findCustomerByUsername(username);
+        User user = userService.findUserByUsername(username);
         model.addAttribute("movie", movie);
-        model.addAttribute("customer", customer);
+        model.addAttribute("user", user);
         model.addAttribute("reservedSeats", reservedSeats);
         return "reserve";
     }
@@ -95,19 +95,20 @@ public class CustomerController {
 
         String userId = authentication.getName();
 
-        Customer customer = customerService.findCustomerByUsername(userId);
+        User user = userService.findUserByUsername(userId);
         Showtime showtime = showtimeService.findShowtimeById(showtimeId);
-        reservationService.addReservation(new Reservation(customer, showtime, seats));
+        for (String s : seats)
+            reservationService.addReservation(new Reservation(user, showtime, s));
 
-        return "redirect:/customer/reservations/list";
+        return "redirect:/user/reservations/list";
     }
 
     @GetMapping("/reservations/list")
     public String getAllReservations(Authentication authentication, Model model) {
         String userId = authentication.getName();
 
-        Customer customer = customerService.findCustomerByUsername(userId);
-        model.addAttribute("reservations", customer.getReservations());
+        User user = userService.findUserByUsername(userId);
+        model.addAttribute("reservations", user.getReservations());
         return "reservations";
     }
 

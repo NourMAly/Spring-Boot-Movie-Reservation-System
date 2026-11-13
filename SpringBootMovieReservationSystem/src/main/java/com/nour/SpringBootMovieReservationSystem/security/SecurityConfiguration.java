@@ -1,6 +1,7 @@
 package com.nour.SpringBootMovieReservationSystem.security;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -27,16 +29,29 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 
 @Configuration
 public class SecurityConfiguration {
 
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+
+    SecurityConfiguration(CustomAccessDeniedHandler customAccessDeniedHandler,
+            CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+    }
+
     @Bean
     public JdbcUserDetailsManager jdbcUserDetailsManager(DataSource dataSource) {
         JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
-        jdbcUserDetailsManager.setUsersByUsernameQuery("select username,pw,active from customer where username=?");
+        jdbcUserDetailsManager.setUsersByUsernameQuery("select username,pw,active from user where username=?");
         jdbcUserDetailsManager.setAuthoritiesByUsernameQuery("select username,role from roles where username=?");
         return jdbcUserDetailsManager;
     }
@@ -59,12 +74,13 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) {
         httpSecurity.authorizeHttpRequests(configurer -> configurer
                 .requestMatchers(HttpMethod.GET, "/admin/**").hasRole("EMPLOYEE")
-                .requestMatchers(HttpMethod.GET, "/customer/home").hasRole("CUSTOMER")
-                .requestMatchers("/showCustomerLoginPage", "/showAdminLoginPage").permitAll()
+                .requestMatchers(HttpMethod.GET, "/user/home").hasRole("CUSTOMER")
+                .requestMatchers("/showUserLoginPage", "/showAdminLoginPage").permitAll()
+                .requestMatchers("/error").permitAll()
                 .anyRequest()
                 .authenticated())
                 .formLogin(form -> form
-                        .loginPage("/showCustomerLoginPage")
+                        .loginPage("/showUserLoginPage")
                         .loginProcessingUrl("/authenticateTheUser")
                         .successHandler(new CustomAuthenticationSuccessHandler())
                         .permitAll())
@@ -83,9 +99,13 @@ public class SecurityConfiguration {
     public SecurityFilterChain apiFilterChain(HttpSecurity http) {
         http.securityMatcher("/api/**")
                 .csrf(csrf -> csrf.disable())
+                // .csrf(csrf ->
+                // csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                .cors(Customizer.withDefaults())
                 .sessionManagement(s -> s
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/auth/me").authenticated()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/movies/**", "/api/v1/showtimes/**").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("EMPLOYEE")
@@ -93,7 +113,12 @@ public class SecurityConfiguration {
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth -> oauth
                         .jwt(jwt -> jwt
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter())));
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler))
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(customAccessDeniedHandler)
+                        .authenticationEntryPoint(customAuthenticationEntryPoint));
         return http.build();
     }
 
@@ -123,5 +148,17 @@ public class SecurityConfiguration {
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(granted);
         return converter;
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource(
+            @Value("${app.cors.allowed-origins}") List<String> origins) {
+        CorsConfiguration cfg = new CorsConfiguration();
+        cfg.setAllowedOrigins(origins);
+        cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
+        cfg.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-XSRF-TOKEN"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/api/**", cfg);
+        return source;
     }
 }

@@ -19,5 +19,8 @@ public interface ShowtimeDAO {
 
     public boolean isHallFullAtSameTime(LocalTime startTime, int hallId, int showtimeId);
 
+    public List<Showtime> hallShowtimes(int hallId);
+
     public List<Showtime> getMovieShowtimes(int movieId);
+
 }

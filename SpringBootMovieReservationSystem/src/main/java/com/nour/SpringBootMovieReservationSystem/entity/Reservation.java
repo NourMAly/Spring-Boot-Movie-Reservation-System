@@ -1,13 +1,10 @@
 package com.nour.SpringBootMovieReservationSystem.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import java.math.BigDecimal;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,41 +21,61 @@ public class Reservation {
     @Column(name = "id")
     private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "showtime_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "showtime_id", nullable = false)
     private Showtime showtime;
+    @Column(name = "seat_label", nullable = false, length = 5)
+    private String seatLabel;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "seats", columnDefinition = "json")
-    private List<String> seats = new ArrayList<>();
+    @Column(name = "booking_ref", nullable = false, updatable = false, length = 36)
+    private String bookingRef;
+
+    @Column(nullable = false, precision = 8, scale = 2)
+    private BigDecimal price;
 
     public Reservation() {
     }
 
-    public Reservation(Customer customer, Showtime showtime, List<String> seats) {
-        this.customer = customer;
+    public Reservation(User user, Showtime showtime, String seatLabel) {
+        this.user = user;
         this.showtime = showtime;
-        this.seats = seats;
+        this.seatLabel = seatLabel;
     }
+
+    // public Reservation(User user, Showtime showtime, String seatLabel, String
+    // bookingRef) {
+    // this.user = user;
+    // this.showtime = showtime;
+    // this.seatLabel = seatLabel;
+    // this.bookingRef = bookingRef;
+    // }
 
     public int getId() {
         return id;
+    }
+
+    public Reservation(User user, Showtime showtime, String seatLabel, String bookingRef, BigDecimal price) {
+        this.user = user;
+        this.showtime = showtime;
+        this.seatLabel = seatLabel;
+        this.bookingRef = bookingRef;
+        this.price = price;
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public User getUser() {
+        return user;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Showtime getShowtime() {
@@ -69,17 +86,25 @@ public class Reservation {
         this.showtime = showtime;
     }
 
-    public List<String> getSeats() {
-        return seats;
+    public String getSeatLabel() {
+        return seatLabel;
     }
 
-    public void setSeats(List<String> seats) {
-        this.seats = seats;
+    public void setSeatLabel(String seatLabel) {
+        this.seatLabel = seatLabel;
+    }
+
+    public String getBookingRef() {
+        return bookingRef;
     }
 
     @Override
     public String toString() {
-        return "Reservation [id=" + id + ", customer=" + customer + ", showtime=" + showtime + ", seats=" + seats + "]";
+        return "Reservation [id=" + id
+                + ", userId=" + (user != null ? user.getId() : null)
+                + ", showtimeId=" + (showtime != null ? showtime.getId() : null)
+                + ", seatLabel=" + seatLabel
+                + ", bookingRef=" + bookingRef + "]";
     }
 
 }

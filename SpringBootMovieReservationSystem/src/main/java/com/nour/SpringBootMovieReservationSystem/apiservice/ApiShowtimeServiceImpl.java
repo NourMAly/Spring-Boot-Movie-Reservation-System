@@ -100,9 +100,13 @@ public class ApiShowtimeServiceImpl implements ApiShowtimeService {
 
         LocalDateTime endDateTime = showtimeRequest.showDateTime()
                 .plusMinutes(movie.getRunTimeInMinutes());
+        List<Showtime> otherShowtimes = showtimeDAO.hallShowtimes(showtimeRequest.hallNumber())
+                .stream()
+                .filter(s -> s.getId() != id)
+                .toList();
         if (isOverlapping(showtimeRequest.showDateTime().toLocalDate(), endDateTime.toLocalDate(),
                 showtimeRequest.showDateTime().toLocalTime(), endDateTime.toLocalTime(),
-                showtimeDAO.hallShowtimes(showtimeRequest.hallNumber())))
+                otherShowtimes))
             throw new HallAlreadyOccupiedException(
                     "Hall already occupied at this showtime: " + showtimeRequest.showDateTime());
 

@@ -7,6 +7,8 @@ import com.nour.SpringBootMovieReservationSystem.apiservice.ApiReservationServic
 import com.nour.SpringBootMovieReservationSystem.dto.ReservationRequest;
 import com.nour.SpringBootMovieReservationSystem.dto.ReservationResponse;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/api/v1/reservations")
 public class ReservationRestController {
@@ -34,6 +37,8 @@ public class ReservationRestController {
         this.apiReservationService = apiReservationService;
     }
 
+    @Operation(summary = "Reserve seats", description = "Reserves one or more seats for a specific showtime. " +
+            "Only authenticated users can make reservations.")
     @PostMapping("/reserve")
     public ResponseEntity<ReservationResponse> reserve(@Valid @RequestBody ReservationRequest reservationRequest,
             @AuthenticationPrincipal Jwt jwt) {

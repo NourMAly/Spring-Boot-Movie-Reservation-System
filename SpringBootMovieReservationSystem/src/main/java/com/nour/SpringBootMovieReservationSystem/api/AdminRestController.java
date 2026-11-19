@@ -26,10 +26,12 @@ import com.nour.SpringBootMovieReservationSystem.dto.ReservationResponse;
 import com.nour.SpringBootMovieReservationSystem.dto.ShowtimeRequest;
 import com.nour.SpringBootMovieReservationSystem.dto.ShowtimeResponse;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("api/v1/admin")
 public class AdminRestController {

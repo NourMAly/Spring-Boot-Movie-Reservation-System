@@ -25,12 +25,7 @@ public class ApiHallServiceImpl implements ApiHallService {
     @Override
     public HallResponse addHall(HallRequest hallRequest) {
         Hall hall = new Hall(hallRequest.numberOfSeats(), hallRequest.seats());
-        try {
-            hallDao.addHall(hall);
-        } catch (Exception e) {
-            System.out.println("Exception: " + e.getMessage());
-        }
-
+        hallDao.addHall(hall);
         return new HallResponse(hall.getId(), hall.getNumberOfSeats(), hall.getSeats());
     }
 

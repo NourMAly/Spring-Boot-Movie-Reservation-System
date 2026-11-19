@@ -29,6 +29,7 @@ import com.nour.SpringBootMovieReservationSystem.dto.RegisterRequest;
 import com.nour.SpringBootMovieReservationSystem.dto.TokenResponse;
 import com.nour.SpringBootMovieReservationSystem.dto.UserResponse;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
@@ -100,6 +101,7 @@ public class AuthController {
         apiUserService.registerUser(registerRequest);
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/me")
     public ResponseEntity<UserResponse> viewProfile(@AuthenticationPrincipal Jwt jwt) {
         UserResponse response = apiUserService.viewProfile(jwt.getSubject(), jwt.getClaimAsStringList("roles"));

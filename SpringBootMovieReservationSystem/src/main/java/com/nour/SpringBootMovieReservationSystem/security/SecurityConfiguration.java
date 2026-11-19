@@ -73,6 +73,11 @@ public class SecurityConfiguration {
     @Order(2)
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) {
         httpSecurity.authorizeHttpRequests(configurer -> configurer
+                .requestMatchers(
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**")
+                .permitAll()
                 .requestMatchers(HttpMethod.GET, "/admin/**").hasRole("EMPLOYEE")
                 .requestMatchers(HttpMethod.GET, "/user/home").hasRole("CUSTOMER")
                 .requestMatchers("/showUserLoginPage", "/showAdminLoginPage").permitAll()

@@ -37,7 +37,7 @@ public class ApiUserServiceImpl implements ApiUserService {
         String lastname = registerRequest.lastname().trim();
         String email = registerRequest.email().trim().toLowerCase();
         String username = registerRequest.username().trim();
-        if (!userDAO.isUsernameUnique(registerRequest.username()))
+        if (!userDAO.isUsernameUnique(username))
             throw new UserAlreadyExistsException("Username already taken");
         if (!userDAO.isEmailUnique(email))
             throw new UserAlreadyExistsException("Email is already registered");

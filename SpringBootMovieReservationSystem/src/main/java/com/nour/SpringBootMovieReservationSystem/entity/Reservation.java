@@ -46,13 +46,12 @@ public class Reservation {
         this.seatLabel = seatLabel;
     }
 
-    // public Reservation(User user, Showtime showtime, String seatLabel, String
-    // bookingRef) {
-    // this.user = user;
-    // this.showtime = showtime;
-    // this.seatLabel = seatLabel;
-    // this.bookingRef = bookingRef;
-    // }
+    public Reservation(User user, Showtime showtime, String seatLabel, String bookingRef) {
+        this.user = user;
+        this.showtime = showtime;
+        this.seatLabel = seatLabel;
+        this.bookingRef = bookingRef;
+    }
 
     public int getId() {
         return id;

@@ -10,27 +10,23 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.nour.SpringBootMovieReservationSystem.CustomException.UserNotFoundException;
 import com.nour.SpringBootMovieReservationSystem.CustomException.InvalidSeatException;
 import com.nour.SpringBootMovieReservationSystem.CustomException.ReservationNotCancellableException;
 import com.nour.SpringBootMovieReservationSystem.CustomException.ReservationNotFoundException;
 import com.nour.SpringBootMovieReservationSystem.CustomException.SeatOccupiedException;
 import com.nour.SpringBootMovieReservationSystem.CustomException.ShowtimeNotFoundException;
-import com.nour.SpringBootMovieReservationSystem.CustomException.UnauthenticatedUserException;
-import com.nour.SpringBootMovieReservationSystem.dao.UserDAO;
+import com.nour.SpringBootMovieReservationSystem.CustomException.UserNotFoundException;
 import com.nour.SpringBootMovieReservationSystem.dao.ReservationDAO;
 import com.nour.SpringBootMovieReservationSystem.dao.ShowtimeDAO;
+import com.nour.SpringBootMovieReservationSystem.dao.UserDAO;
 import com.nour.SpringBootMovieReservationSystem.dto.ReservationRequest;
 import com.nour.SpringBootMovieReservationSystem.dto.ReservationResponse;
-import com.nour.SpringBootMovieReservationSystem.entity.User;
 import com.nour.SpringBootMovieReservationSystem.entity.Reservation;
 import com.nour.SpringBootMovieReservationSystem.entity.Showtime;
+import com.nour.SpringBootMovieReservationSystem.entity.User;
 
 @Service
 public class ApiReservationServiceImpl implements ApiReservationService {
@@ -88,17 +84,6 @@ public class ApiReservationServiceImpl implements ApiReservationService {
     }
 
     @Override
-    public String getLoggedInUserUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null ||
-                !authentication.isAuthenticated() ||
-                authentication instanceof AnonymousAuthenticationToken) {
-            throw new UnauthenticatedUserException("No authenticated user found");
-        }
-        return authentication.getName();
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public List<ReservationResponse> allMyreservations(String username) {
         User user = userDAO.findUserByUsername(username);
@@ -128,21 +113,6 @@ public class ApiReservationServiceImpl implements ApiReservationService {
                     showtime.getPrice().multiply(BigDecimal.valueOf(seats.size()))));
         }
         return responses;
-    }
-
-    @Override
-    public void deleteMyReservation(int revId, String username) {
-        User user = userDAO.findUserByUsername(username);
-        if (user == null)
-            throw new UserNotFoundException("User not found");
-        Reservation r = reservationDAO.findReservationById(revId);
-        if (r == null)
-            throw new ReservationNotFoundException("No reservation found");
-        // reservation id given does not belong to logged in user
-        if (r.getUser().getId() != user.getId())
-            throw new ReservationNotFoundException("No reservation found");
-        reservationDAO.deleteReservation(r);
-
     }
 
     @Override

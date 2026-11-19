@@ -11,11 +11,7 @@ public interface ApiReservationService {
 
     public boolean isReservationUnique(int showtimeId, List<String> seats);
 
-    String getLoggedInUserUsername();
-
     public List<ReservationResponse> allMyreservations(String username);
-
-    public void deleteMyReservation(int revId, String username);
 
     void cancelMyReservation(String bookingRef, String username);
 
